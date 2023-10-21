@@ -42,9 +42,23 @@ catbunny_pos_y = HEIGHT - 300
 
 ground = HEIGHT - 300
 
+wizard_image = pygame.image.load('wizard.png')
+wizard_image = pygame.transform.scale(wizard_image, (100, 200))
+
+fireball_image = pygame.image.load('fireball.png')
+fireball_image = pygame.transform.scale(fireball_image, (20, 20))
+
+# Wizard position
+wizard_pos = [WIDTH - wizard_image.get_width(), 250]
+
+# Fireball data
+fireballs = []
+fireball_speed = 5
+fireball_chance = 0.02  # The chance on each frame for the wizard to shoot a fireball
+
 # Load the Carrot Image & Set its Position:
 carrot_image = pygame.image.load('carrot.png')  # Load the carrot image
-carrot_image = pygame.transform.scale(carrot_image, (100, 100))
+carrot_image = pygame.transform.scale(carrot_image, (50, 80))
 carrot_pos = [WIDTH, random.randint(0, HEIGHT - carrot_image.get_height())]
 carrot_speed = 5  # Initialize carrot speed
 
@@ -90,6 +104,18 @@ while True:
             catbunny_pos_y = ground
             jump = False
             velocity = 0
+    
+    # Randomly shoot a fireball
+    if random.random() < fireball_chance:
+        fireball_start_pos = [wizard_pos[0], wizard_pos[1] + wizard_image.get_height() // 2]
+        fireballs.append(fireball_start_pos)
+
+    # Move fireballs to the left
+    for fireball in fireballs:
+        fireball[0] -= fireball_speed
+
+    # Remove fireballs that are off-screen
+    fireballs = [fireball for fireball in fireballs if fireball[0] + fireball_image.get_width() > 0]
 
     # Animation frame update
     current_time = pygame.time.get_ticks()
@@ -133,6 +159,11 @@ while True:
     screen.blit(platform_image, (platform_pos1_x, HEIGHT - platform_image.get_height()-80))
     screen.blit(platform_image, (platform_pos2_x, HEIGHT - platform_image.get_height()-80))
     
+    # Draw the wizard and fireballs
+    screen.blit(wizard_image, wizard_pos)
+    for fireball in fireballs:
+        screen.blit(fireball_image, fireball)
+        
     screen.blit(frames[current_frame], (catbunny_pos_x, catbunny_pos_y))
     screen.blit(carrot_image, carrot_pos)
     
