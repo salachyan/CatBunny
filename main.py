@@ -28,6 +28,16 @@ platform_image = pygame.image.load('platform.png')
 platform_pos1_x = 0
 platform_pos2_x = platform_image.get_width()
 
+block_image = pygame.image.load('block.png')
+block_pos = [WIDTH // 2, HEIGHT - 350]  # Adjust this position based on where you want the block to appear initially.
+block_chance = 0.005  # Adjust this value to control frequency. The higher, the more frequent.
+blocks = []  # List to store the position of each block.
+block_speed = 5  # Speed at which blocks move to the left.
+block_pos_x = random.randint(0, WIDTH - block_image.get_width()) 
+block_pos_y = random.randint(HEIGHT - block_image.get_height() - 150, HEIGHT - block_image.get_height())
+
+
+
 new_width = 350
 new_height = 150
 frame_count = len([name for name in os.listdir('catbunny') if os.path.isfile(os.path.join('catbunny', name))])
@@ -73,10 +83,16 @@ gravity = 2
 jump_force = -30
 velocity = 10
 
+def on_block(catbunny_rect, blocks):
+    for block in blocks:
+        block_rect = pygame.Rect(block[0], block[1], block_image.get_width(), block_image.get_height())
+        if catbunny_rect.colliderect(block_rect):
+            return True
+    return False
+
 def generate_random_carrot_position():
     new_x = random.randint(600, WIDTH - carrot_image.get_width())
     new_y = random.randint(50, 300)  # Ensure the carrot is above the character
-    print(new_x, new_y)
     return (new_x, new_y)
 
 carrot_pos = generate_random_carrot_position()
@@ -97,14 +113,27 @@ while True:
                 jump = True
                 velocity = jump_force
 
- # Check for collision between catbunny and carrot:
+    # Check for collision between catbunny and carrot:
     catbunny_rect = pygame.Rect(catbunny_pos_x, catbunny_pos_y, new_width, new_height)
-    carrot_rect = pygame.Rect(carrot_pos[0], carrot_pos[1], carrot_image.get_width(), carrot_image.get_height())
+    carrot_rect = pygame.Rect(carrot_pos[0], carrot_pos[1], 20, 30)
 
     if catbunny_rect.colliderect(carrot_rect):
         score += 1  
         carrot_pos = generate_random_carrot_position()  # Move the carrot to a new random position
-        
+
+    # Check for collision with block
+    for block in blocks:
+        block_rect = pygame.Rect(block[0], block[1], block_image.get_width(), block_image.get_height())
+        if catbunny_rect.colliderect(block_rect) and velocity > 0:  # Check if the cat is descending onto the block
+            catbunny_pos_y = block[1] - catbunny_rect.height
+            velocity = 0
+            jump = False
+
+    # Check if the cat is on any block
+    if not on_block(catbunny_rect, blocks):
+        # Move the cat down with gravity if it's not on a block and not jumping
+        catbunny_pos_y += gravity
+
     if jump:
         catbunny_pos_y += velocity
         velocity += gravity
@@ -125,6 +154,15 @@ while True:
     # Remove fireballs that are off-screen
     fireballs = [fireball for fireball in fireballs if fireball[0] + fireball_image.get_width() > 0]
 
+    if random.random() < block_chance:
+        new_block_pos = [WIDTH, HEIGHT - 350]  # Adjust the height value if necessary.
+        blocks.append(new_block_pos)
+
+    for block in blocks:
+        block[0] -= block_speed
+
+    blocks = [block for block in blocks if block[0] + block_image.get_width() > 0]
+
     # Animation frame update
     current_time = pygame.time.get_ticks()
     if current_time - last_frame_time > frame_duration:
@@ -135,7 +173,7 @@ while True:
     carrot_pos = (carrot_pos[0] - carrot_speed, carrot_pos[1])
     # If the carrot is completely off the screen to the left
     if carrot_pos[0] < -carrot_image.get_width():
-        carrot_pos[0] = WIDTH 
+        carrot_pos = list(generate_random_carrot_position())
         carrot_pos[1] = random.randint(0, HEIGHT - 300 - carrot_image.get_height()) 
 
 
@@ -172,6 +210,9 @@ while True:
     for fireball in fireballs:
         screen.blit(fireball_image, fireball)
         
+    for block in blocks:
+        screen.blit(block_image, block)
+
     screen.blit(frames[current_frame], (catbunny_pos_x, catbunny_pos_y))
     screen.blit(carrot_image, carrot_pos)
     
@@ -179,3 +220,5 @@ while True:
     screen.blit(text, (10, 10))  # Display the score in the top-left corner
 
     pygame.display.flip()
+
+
