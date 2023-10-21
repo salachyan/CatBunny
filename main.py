@@ -33,10 +33,11 @@ ground = HEIGHT - 300
 # Load the Carrot Image & Set its Position:
 carrot_image = pygame.image.load('carrot.png')  # Load the carrot image
 carrot_image = pygame.transform.scale(carrot_image, (100, 100))
-carrot_pos = [random.randint(0, WIDTH - carrot_image.get_width()), random.randint(0, HEIGHT - carrot_image.get_height())]  # Set the initial random position of the carrot.
+carrot_pos = [WIDTH, random.randint(0, HEIGHT - carrot_image.get_height())]
+carrot_speed = 5  # Initialize carrot speed
 
 # Collision Detection and Score Management Initialization:
-score = 0  # Initial score.
+score = 0  # Initial score
 
 font = pygame.font.SysFont(None, 36)  # Choose a font and size for displaying score.
 
@@ -67,8 +68,8 @@ while True:
     carrot_rect = pygame.Rect(carrot_pos[0], carrot_pos[1], carrot_image.get_width(), carrot_image.get_height())
 
     if catbunny_rect.colliderect(carrot_rect):
-        score += 1  # Increase the score.
-        carrot_pos = [random.randint(0, WIDTH - carrot_image.get_width()), random.randint(0, HEIGHT - carrot_image.get_height())]  # Move the carrot to a new random position.
+        score += 1  
+        carrot_pos = [random.randint(0, WIDTH - carrot_image.get_width()), random.randint(0, HEIGHT - carrot_image.get_height())]  # Move the carrot to a new random position
         
     if jump:
         catbunny_pos_y += velocity
@@ -83,12 +84,19 @@ while True:
     if current_time - last_frame_time > frame_duration:
         current_frame = (current_frame + 1) % len(frames)
         last_frame_time = current_time
+        
+     # Update carrot's position
+    carrot_pos[0] -= carrot_speed
+    # If the carrot is completely off the screen to the left
+    if carrot_pos[0] < -carrot_image.get_width():
+        carrot_pos[0] = WIDTH 
+        carrot_pos[1] = random.randint(0, HEIGHT - 300 - carrot_image.get_height()) 
 
     screen.blit(frames[current_frame], (catbunny_pos_x, catbunny_pos_y))
-    screen.blit(carrot_image, (carrot_pos[0], carrot_pos[1]))  # Draw the carrot on screen.
+    screen.blit(carrot_image, carrot_pos)
     
-    text = font.render(f'Score: {score}', True, (0, 0, 0))  # Black color for the text.
-    screen.blit(text, (10, 10))  # Display the score in the top-left corner.
+    text = font.render(f'Score: {score}', True, (0, 0, 0))  # Black color for the text
+    screen.blit(text, (10, 10))  # Display the score in the top-left corner
 
     pygame.display.flip()
 
