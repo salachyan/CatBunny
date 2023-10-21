@@ -7,7 +7,7 @@ from pygame.locals import QUIT, KEYDOWN, K_SPACE
 pygame.init()
 
 # Screen dimensions
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 1000, 600
 
 # Colors
 WHITE = (255, 255, 255)
@@ -16,13 +16,23 @@ WHITE = (255, 255, 255)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("BLUE WAFFLE")
 
+background_image = pygame.image.load('background.png')
+background_image = pygame.transform.scale(background_image, (3600, 600))  # Preserve the original size as it's designed for this resolution
+
+background_pos1 = [0, 0]  # This starts at the left edge of the screen
+background_pos2 = [3600, 0]  # This starts just off the right edge of the screen, given the width of the background image
+
+background_speed = 2.5 # Adjust this value for desired background scroll speed
+
+platform_image = pygame.image.load('platform.png')
+
 new_width = 350
 new_height = 150
 frame_count = len([name for name in os.listdir('catbunny') if os.path.isfile(os.path.join('catbunny', name))])
 frames = [pygame.transform.scale(pygame.image.load(os.path.join('catbunny', f'frame{i}.png')), (new_width, new_height)) for i in range(1, frame_count + 1)]
 
 current_frame = 0
-frame_duration = 70
+frame_duration = 50
 last_frame_time = pygame.time.get_ticks()
 
 catbunny_pos_x = WIDTH // 2 - new_width // 2
@@ -42,14 +52,14 @@ font = pygame.font.SysFont(None, 36)  # Choose a font and size for displaying th
 
 # Jumping variables
 jump = False
-gravity = 1
-jump_force = -20
-velocity = 0
+gravity = 2
+jump_force = -30
+velocity = 10
 
 carrot_min_y = 300  # Minimum Y position for the carrot
 
 clock = pygame.time.Clock()  # Initialize the clock object
-FPS = 60  # Set the desired frames per second
+FPS = 30  # Set the desired frames per second
 
 def generate_random_carrot_position():
     new_x = random.randint(300, WIDTH - carrot_image.get_width())
@@ -99,6 +109,26 @@ while True:
     if carrot_pos[0] < -carrot_image.get_width():
         carrot_pos = generate_random_carrot_position()
 
+
+    # Update the background positions
+    background_pos1[0] -= background_speed
+    background_pos2[0] -= background_speed
+
+    # If the first background is completely off the screen to the left
+    if background_pos1[0] < -3600:
+        background_pos1[0] = 3600  # Reposition it to the right of the second background
+
+    # If the second background is completely off the screen to the left
+    if background_pos2[0] < -3600:
+        background_pos2[0] = 3600  # Reposition it to the right of the first background
+
+    # Draw the backgrounds
+    screen.blit(background_image, background_pos1)
+    screen.blit(background_image, background_pos2)
+    platform_pos_x = catbunny_pos_x
+    platform_pos_y = catbunny_pos_y + new_height + 10
+    screen.blit(platform_image, (platform_pos_x, platform_pos_y))
+    
     screen.blit(frames[current_frame], (catbunny_pos_x, catbunny_pos_y))
     screen.blit(carrot_image, carrot_pos)
 
