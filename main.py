@@ -25,6 +25,8 @@ background_pos2 = [3600, 0]  # This starts just off the right edge of the screen
 background_speed = 2.5 # Adjust this value for desired background scroll speed
 
 platform_image = pygame.image.load('platform.png')
+platform_pos1_x = 0
+platform_pos2_x = platform_image.get_width()
 
 new_width = 350
 new_height = 150
@@ -35,7 +37,7 @@ current_frame = 0
 frame_duration = 50
 last_frame_time = pygame.time.get_ticks()
 
-catbunny_pos_x = WIDTH // 2 - new_width // 2
+catbunny_pos_x = 40
 catbunny_pos_y = HEIGHT - 300
 
 ground = HEIGHT - 300
@@ -115,12 +117,21 @@ while True:
     if background_pos2[0] < -3600:
         background_pos2[0] = 3600  # Reposition it to the right of the first background
 
+    scroll_speed = 5  # Adjust this value as needed
+    platform_pos1_x -= scroll_speed
+    platform_pos2_x -= scroll_speed
+
+    if platform_pos1_x <= -platform_image.get_width():
+        platform_pos1_x = platform_image.get_width()
+
+    if platform_pos2_x <= -platform_image.get_width():
+        platform_pos2_x = platform_image.get_width()
+        
     # Draw the backgrounds
     screen.blit(background_image, background_pos1)
     screen.blit(background_image, background_pos2)
-    platform_pos_x = catbunny_pos_x
-    platform_pos_y = catbunny_pos_y + new_height + 10
-    screen.blit(platform_image, (platform_pos_x, platform_pos_y))
+    screen.blit(platform_image, (platform_pos1_x, HEIGHT - platform_image.get_height()-80))
+    screen.blit(platform_image, (platform_pos2_x, HEIGHT - platform_image.get_height()-80))
     
     screen.blit(frames[current_frame], (catbunny_pos_x, catbunny_pos_y))
     screen.blit(carrot_image, carrot_pos)
