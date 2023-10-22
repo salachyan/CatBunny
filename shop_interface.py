@@ -15,7 +15,7 @@ def button_click(button_name):
         background_label.image = new_bg_image 
         buy_button1.destroy()
     if button_name == "Bottom Right":
-        subprocess.Popen(["python", "englishmain.py"])
+        subprocess.Popen(["python3", "englishmain.py"])
         root.destroy()
 
 

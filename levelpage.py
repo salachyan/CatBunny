@@ -13,7 +13,7 @@ def button_click(button_name):
         open_level_window()
 
     if button_name == "Start":
-        subprocess.Popen(["python", "main.py"])
+        subprocess.Popen(["python3", "main.py"])
         root.destroy()
       
 def open_level_window():
