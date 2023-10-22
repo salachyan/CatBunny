@@ -14,7 +14,7 @@ WHITE = (255, 255, 255)
 
 # Set up the display
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("BLUE WAFFLE")
+pygame.display.set_caption("CatBunny Hop")
 
 background_image = pygame.image.load('background.png')
 background_image = pygame.transform.scale(background_image, (3600, 600))
@@ -60,7 +60,7 @@ fireball_image = pygame.image.load('fireball.png')
 fireball_image = pygame.transform.scale(fireball_image, (20, 20))
 
 # Wizard position
-wizard_pos = [WIDTH - wizard_image.get_width(), 250]
+wizard_pos = [850, 250]
 
 # Fireball data
 fireballs = []
@@ -98,14 +98,30 @@ while True:
     clock.tick(FPS)
     screen.fill(WHITE)
 
+    # Variables
+    on_block = False
+    jumping = False
+
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             exit()
         if event.type == KEYDOWN:
-            if event.key == K_SPACE and not jump:
+            # Allow jump if Catbunny is not currently jumping and either it's on the ground or on a block
+            if event.key == K_SPACE and not jump and (catbunny_pos_y == ground or on_block):
                 jump = True
                 velocity = jump_force
+
+
+    # for event in pygame.event.get():
+    #     if event.type == QUIT:
+    #         pygame.quit()
+    #         exit()
+    #     if event.type == KEYDOWN:
+    #         if event.key == K_SPACE and not jump:
+    #             jump = True
+    #             velocity = jump_force
+
 
     catbunny_rect = pygame.Rect(catbunny_pos_x-100, catbunny_pos_y, new_width, new_height)
     carrot_rect = pygame.Rect(carrot_pos[0], carrot_pos[1], 20, 30)
@@ -113,9 +129,32 @@ while True:
     if catbunny_rect.colliderect(carrot_rect):
         score += 1
         carrot_pos = generate_random_carrot_position()
+        
+    # Check if score is 10 right after updating it
+    if score == 10:
+        print("WORK ON LINE 119")
+        # Work Here
+        # Work Here
+        # Work Here
+        # Work Here
+        # Work Here
+        # Work Here
+        # Work Here
+        # Work Here
+        # Work Here
+        # Work Here
+        # Work Here
+        # Work Here
+        # Work Here
+        # Work Here
+        # Work Here
+        # Work Here
+        # Work Here
+
+    # Always apply gravity
+    catbunny_pos_y += velocity
 
     if jump:
-        catbunny_pos_y += velocity
         velocity += gravity
         if catbunny_pos_y >= ground:
             catbunny_pos_y = ground
@@ -147,6 +186,8 @@ while True:
     for fireball in fireballs:
         fireball[0] -= fireball_speed
     
+    # below lines are block FUCK BLOCKS FUCK FUCK FUCK
+    
     current_time = pygame.time.get_ticks()
     if current_time > block_spawn_time + block_spawn_interval:
         new_block_pos_x = WIDTH
@@ -154,39 +195,43 @@ while True:
 
         blocks.append([new_block_pos_x, new_block_pos_y])
         block_spawn_time = current_time
-        block_spawn_interval = random.randint(1000, 3000)
-        
-    # Universal Gravity Logic
-    catbunny_pos_y += velocity
-    velocity += gravity
+        block_spawn_interval = random.randint(2000, 4000)
 
-    # Check if the catbunny is below the ground:
-    if catbunny_pos_y > ground:
-        catbunny_pos_y = ground
-        jump = False
-        velocity = 0
 
-    # Check for collision with blocks
+    catbunny_rect = pygame.Rect(catbunny_pos_x-100, catbunny_pos_y, new_width, new_height)
     on_block = False
+
+    # Check if catbunny lands on a block or falls off a block
+    # Move all blocks to the left
+    for block in blocks:
+        block[0] -= block_speed  # move the block leftwards
+
+    # Reset on_block flag for this iteration
+    on_block = False
+    apply_gravity = True
+    
+    # Check if catbunny lands on a block or falls off a block
     for block in blocks:
         block_rect = pygame.Rect(block[0], block[1], block_width, block_height)
         
-        # Move block to the left
-        block[0] -= block_speed
+        # Check if catbunny's bottom collides with the block
+        if block_rect.collidepoint(catbunny_rect.bottom):
+            on_block = True
+            catbunny_pos_y = block_rect.top - catbunny_rect.height + 30  # Add your desired offset here
+            velocity = 0
+            break
+
+    # If not on a block and below ground, place catbunny on the ground
+    if not on_block and catbunny_pos_y >= ground:
+        catbunny_pos_y = ground
+        velocity = 0
+        apply_gravity = False
+    elif on_block:
+        apply_gravity = False
+
         
-        # Check if catbunny is on top of the block
-        if catbunny_rect.colliderect(block_rect):
-            if catbunny_pos_y + new_height <= block_rect.top + 10:
-                on_block = True
-                catbunny_pos_y = block_rect.top - new_height
-                jump = False
-                velocity = 0
+    # above lines are block FUCK BLOCKS FUCK FUCK FUCK
 
-
-
-
-
-    current_time = pygame.time.get_ticks()
     if current_time - last_frame_time > frame_duration:
         current_frame = (current_frame + 1) % len(frames)
         last_frame_time = current_time
