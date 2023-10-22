@@ -3,6 +3,7 @@ from tkinter import PhotoImage, font
 import subprocess
 from PIL import Image, ImageTk
 
+current_window = "main_page"
 # Create the main application window
 root = tk.Tk()
 root.title("Button Options")
@@ -21,12 +22,13 @@ def open_level_window():
     shop_button.grid_forget()
     closet_button.grid_forget()
 
-    # Add text to the canvas
-    label = tk.Label(root, text="In order to pass this level, you must collect 5 Carrots!", width=80, height=25, bg="#F69585", fg="white", font=("Helvetica", 12))
-    label.place(x=160, y=115)
+    new_bg_image = PhotoImage(file="images/level1_selection_page.png")  
+    background_label.configure(image=new_bg_image) 
+    background_label.image = new_bg_image 
+
 
     start_button = tk.Button(root, text="Play", command=lambda: button_click("Start"), width=10, height=2, relief="ridge", borderwidth=4, bg=pastel_green, fg="white", font=custom_font)
-    start_button.grid(row=0, column=0, padx=(200), pady=(500))
+    start_button.grid(row=0, column=0, padx=(200), pady=(450))
 
 
     goback_button = tk.Button(root, text="Exit", command=lambda: button_click("GoBack"), width=10, height=2, relief="ridge", borderwidth=4, bg=pastel_blue, fg="white", font=custom_font)
