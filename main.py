@@ -27,7 +27,7 @@ background_speed = 2.5
 
 blocks = []  # Store active blocks
 block_spawn_time = 0
-block_spawn_interval = random.randint(1000, 3000)  # between 1 and 3 seconds
+block_spawn_interval = random.randint(1000, 2500)  # between 1 and 3 seconds
 block_image = pygame.image.load('block.png')
 block_width, block_height = block_image.get_size()
 block_speed = 5
@@ -46,9 +46,9 @@ frame_duration = 50
 last_frame_time = pygame.time.get_ticks()
 
 catbunny_pos_x = 40
-catbunny_pos_y = HEIGHT - 300
+catbunny_pos_y = HEIGHT - 200
 
-ground = HEIGHT - 300
+ground = HEIGHT - 260
 
 
 
@@ -63,7 +63,7 @@ fireball_image = pygame.image.load('fireball.png')
 fireball_image = pygame.transform.scale(fireball_image, (20, 20))
 
 # Wizard position
-wizard_pos = [850, 250]
+wizard_pos = [850, 300]
 
 # Fireball data
 fireballs = []
@@ -89,7 +89,7 @@ velocity = 10
 
 def generate_random_carrot_position():
     new_x = random.randint(600, WIDTH - carrot_image.get_width())
-    new_y = random.randint(50, 300)
+    new_y = random.randint(50, 400)
     return (new_x, new_y)
 
 carrot_pos = generate_random_carrot_position()
@@ -159,7 +159,7 @@ while True:
         catbunny_pos_y += velocity
         
         # Check if CatBunny goes over the top boundary
-        if catbunny_pos_y < -5:
+        if catbunny_pos_y < -50:
             velocity = 0  # Reset the velocity so it starts descending immediately
 
 
@@ -176,7 +176,7 @@ while True:
         catbunny_rect = pygame.Rect(catbunny_pos_x-100, catbunny_pos_y, new_width, new_height)
         
         for fireball in fireballs:
-            fireball_rect = pygame.Rect(fireball[0], fireball[1], 30, 30)
+            fireball_rect = pygame.Rect(fireball[0], fireball[1], 20, 20)
             if catbunny_rect.colliderect(fireball_rect):
                 score -= 1  # Decrement the score
                 if score < 0:
@@ -200,7 +200,7 @@ while True:
         current_time = pygame.time.get_ticks()
         if current_time > block_spawn_time + block_spawn_interval:
             new_block_pos_x = WIDTH
-            new_block_pos_y = random.randint(150, 350)
+            new_block_pos_y = random.randint(100, 350)
 
             blocks.append([new_block_pos_x, new_block_pos_y])
             block_spawn_time = current_time
@@ -250,8 +250,8 @@ while True:
 
         screen.blit(background_image, background_pos1)
         screen.blit(background_image, background_pos2)
-        screen.blit(platform_image, (platform_pos1_x, HEIGHT - platform_image.get_height()-80))
-        screen.blit(platform_image, (platform_pos2_x, HEIGHT - platform_image.get_height()-80))
+        screen.blit(platform_image, (platform_pos1_x, HEIGHT - platform_image.get_height()-40))
+        screen.blit(platform_image, (platform_pos2_x, HEIGHT - platform_image.get_height()-40))
         screen.blit(wizard_image, wizard_pos)
 
 
