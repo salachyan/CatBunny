@@ -150,8 +150,8 @@ while True:
             carrot_pos = generate_random_carrot_position()
             
         # Check if score is 10 right after updating it
-        if score == 1:
-            subprocess.Popen(["python", "winpage.py"])
+        if score == 5:
+            subprocess.Popen(["python3", "winpage.py"])
             exit(1)
             
 
@@ -280,8 +280,8 @@ while True:
     else:
         screen.blit(background_image, background_pos1)
         screen.blit(background_image, background_pos2)
-        screen.blit(platform_image, (platform_pos1_x, HEIGHT - platform_image.get_height()-80))
-        screen.blit(platform_image, (platform_pos2_x, HEIGHT - platform_image.get_height()-80))
+        screen.blit(platform_image, (platform_pos1_x, HEIGHT - platform_image.get_height()-40))
+        screen.blit(platform_image, (platform_pos2_x, HEIGHT - platform_image.get_height()-40))
         screen.blit(wizard_image, wizard_pos)
 
 
