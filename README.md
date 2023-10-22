@@ -1,5 +1,6 @@
 # CatBunny's Hop Adventure
-Brief Description
+
+## Brief Description
 Dive into the thrilling world of "Catbunny's Hop Adventure"! Help Catbunny hop over obstacles, avoid the menacing fireballs, and collect as many carrots as possible. Are you up for the challenge?
 
 ## How to Play
