@@ -100,27 +100,27 @@ while True:
 
     # Variables
     on_block = False
-    jumping = False
 
+    # Check if catbunny lands on a block or falls off a block
+    for block in blocks:
+        block_rect = pygame.Rect(block[0], block[1], block_width, block_height)
+        
+        # Check if catbunny's bottom collides with the block
+        if block_rect.collidepoint(catbunny_rect1.midbottom) and velocity >= 0:
+            on_block = True
+            catbunny_pos_y = block_rect.top - catbunny_rect1.height + 30  # Add your desired offset here
+            velocity = 0
+            break
+        
+        
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             exit()
         if event.type == KEYDOWN:
-            # Allow jump if Catbunny is not currently jumping and either it's on the ground or on a block
-            if event.key == K_SPACE and not jump and (catbunny_pos_y == ground or on_block):
+            if event.key == K_SPACE:
                 jump = True
                 velocity = jump_force
-
-
-    # for event in pygame.event.get():
-    #     if event.type == QUIT:
-    #         pygame.quit()
-    #         exit()
-    #     if event.type == KEYDOWN:
-    #         if event.key == K_SPACE and not jump:
-    #             jump = True
-    #             velocity = jump_force
 
 
     catbunny_rect = pygame.Rect(catbunny_pos_x-100, catbunny_pos_y, new_width, new_height)
@@ -153,6 +153,11 @@ while True:
 
     # Always apply gravity
     catbunny_pos_y += velocity
+    
+    # Check if CatBunny goes over the top boundary
+    if catbunny_pos_y < -20:
+        velocity = 0  # Reset the velocity so it starts descending immediately
+
 
     if jump:
         velocity += gravity
@@ -198,36 +203,18 @@ while True:
         block_spawn_interval = random.randint(2000, 4000)
 
 
-    catbunny_rect = pygame.Rect(catbunny_pos_x-100, catbunny_pos_y, new_width, new_height)
-    on_block = False
+    catbunny_rect1 = pygame.Rect(catbunny_pos_x+30, catbunny_pos_y, new_width, new_height)
 
     # Check if catbunny lands on a block or falls off a block
     # Move all blocks to the left
     for block in blocks:
         block[0] -= block_speed  # move the block leftwards
 
-    # Reset on_block flag for this iteration
-    on_block = False
-    apply_gravity = True
-    
-    # Check if catbunny lands on a block or falls off a block
-    for block in blocks:
-        block_rect = pygame.Rect(block[0], block[1], block_width, block_height)
-        
-        # Check if catbunny's bottom collides with the block
-        if block_rect.collidepoint(catbunny_rect.bottom):
-            on_block = True
-            catbunny_pos_y = block_rect.top - catbunny_rect.height + 30  # Add your desired offset here
-            velocity = 0
-            break
 
     # If not on a block and below ground, place catbunny on the ground
     if not on_block and catbunny_pos_y >= ground:
         catbunny_pos_y = ground
         velocity = 0
-        apply_gravity = False
-    elif on_block:
-        apply_gravity = False
 
         
     # above lines are block FUCK BLOCKS FUCK FUCK FUCK
