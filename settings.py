@@ -10,7 +10,7 @@ root.title("Button Options")
 # Function to handle button clicks
 def button_click(button_name):
     if button_name == "English":
-        subprocess.Popen(["python", "englishmain.py"])
+        subprocess.Popen(["python3", "englishmain.py"])
         root.destroy()
 
 bg_image = PhotoImage(file="images/settings_page.png")

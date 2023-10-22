@@ -11,16 +11,16 @@ root.title("Button Options")
 # Function to handle button clicks
 def button_click(button_name):
     if button_name == "Levels":
-        subprocess.Popen(["python", "levelpage.py"])
+        subprocess.Popen(["python3", "levelpage.py"])
         root.destroy()
     if button_name == "Settings":
-        subprocess.Popen(["python", "settings.py"])
+        subprocess.Popen(["python3", "settings.py"])
         root.destroy()
     if button_name == "Shop":
-        subprocess.Popen(["python", "shop_interface.py"])
+        subprocess.Popen(["python3", "shop_interface.py"])
         root.destroy()
     if button_name == "Closet":
-        subprocess.Popen(["python", "mycloset.py"])
+        subprocess.Popen(["python3", "mycloset.py"])
         root.destroy()
     if button_name == "Close":
         root.destroy()

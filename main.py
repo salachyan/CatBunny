@@ -1,8 +1,9 @@
 import os
 import random
+import subprocess
 import pygame
 from pygame.locals import QUIT, KEYDOWN, K_SPACE
-import subprocess
+
 # Initialize pygame
 pygame.init()
 
@@ -14,7 +15,7 @@ WHITE = (255, 255, 255)
 
 # Set up the display
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("CatBunny Hop")
+pygame.display.set_caption("CatBunny's Hop Adventure")
 
 background_image = pygame.image.load('background.png')
 background_image = pygame.transform.scale(background_image, (3600, 600))
@@ -49,6 +50,8 @@ catbunny_pos_y = HEIGHT - 300
 
 ground = HEIGHT - 300
 
+
+
 carrot1_image = pygame.image.load('carrot$.png')
 carrot1_image = pygame.transform.scale(carrot1_image, (30, 40))
 carrot1_pos = [5, 0]
@@ -81,7 +84,7 @@ font = pygame.font.SysFont(None, 36)
 # Jumping variables
 jump = False
 gravity = 2
-jump_force = -30
+jump_force = -25
 velocity = 10
 
 def generate_random_carrot_position():
@@ -93,6 +96,16 @@ carrot_pos = generate_random_carrot_position()
 
 clock = pygame.time.Clock()
 FPS = 30
+
+# Pause button
+go_button_image = pygame.image.load('go.png')
+go_button_image = pygame.transform.scale(go_button_image, (90, 90))
+pause_button_image = pygame.image.load('pause.png')
+pause_button_image = pygame.transform.scale(pause_button_image, (90, 90))
+
+paused = False
+button_rect = pause_button_image.get_rect(topleft=(910, -20))  # Assuming you want it at the same position
+
 
 while True:
     clock.tick(FPS)
@@ -121,138 +134,174 @@ while True:
             if event.key == K_SPACE:
                 jump = True
                 velocity = jump_force
+        # Handle the button click event
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if button_rect.collidepoint(event.pos):
+                paused = not paused
 
-
-    catbunny_rect = pygame.Rect(catbunny_pos_x-100, catbunny_pos_y, new_width, new_height)
-    carrot_rect = pygame.Rect(carrot_pos[0], carrot_pos[1], 20, 30)
-
-    if catbunny_rect.colliderect(carrot_rect):
-        score += 1
-        carrot_pos = generate_random_carrot_position()
-        
-    # Check if score is 10 right after updating it
-    if score == 5:
-        subprocess.Popen(["python", "winpage.py"])
-        exit(1)
-
-    # Always apply gravity
-    catbunny_pos_y += velocity
     
-    # Check if CatBunny goes over the top boundary
-    if catbunny_pos_y < -20:
-        velocity = 0  # Reset the velocity so it starts descending immediately
+    # STEP 3: Pause game logic when paused
+    if not paused:
+        catbunny_rect = pygame.Rect(catbunny_pos_x-100, catbunny_pos_y, new_width, new_height)
+        carrot_rect = pygame.Rect(carrot_pos[0], carrot_pos[1], 20, 30)
+
+        if catbunny_rect.colliderect(carrot_rect):
+            score += 1
+            carrot_pos = generate_random_carrot_position()
+            
+        # Check if score is 10 right after updating it
+        if score == 5:
+            subprocess.Popen(["python3", "winpage.py"])
+            exit(1)
+            
+
+        # Always apply gravity
+        catbunny_pos_y += velocity
+        
+        # Check if CatBunny goes over the top boundary
+        if catbunny_pos_y < -5:
+            velocity = 0  # Reset the velocity so it starts descending immediately
 
 
-    if jump:
-        velocity += gravity
-        if catbunny_pos_y >= ground:
+        if jump:
+            velocity += gravity
+            if catbunny_pos_y >= ground:
+                catbunny_pos_y = ground
+                jump = False
+                velocity = 0
+
+        fireball_rect = pygame.Rect(carrot_pos[0], carrot_pos[1], 20, 30)
+
+        # Check for collision between catbunny and fireballs:
+        catbunny_rect = pygame.Rect(catbunny_pos_x-100, catbunny_pos_y, new_width, new_height)
+        
+        for fireball in fireballs:
+            fireball_rect = pygame.Rect(fireball[0], fireball[1], 30, 30)
+            if catbunny_rect.colliderect(fireball_rect):
+                score -= 1  # Decrement the score
+                if score < 0:
+                    score = 0  # Ensure score doesn't go below 0
+                fireballs.remove(fireball)  # Remove the fireball
+
+
+
+        if random.random() < fireball_chance:
+            fireball_start_pos = [wizard_pos[0], wizard_pos[1] + wizard_image.get_height() // 2]
+            fireballs.append(fireball_start_pos)
+
+        fireballs = [fireball for fireball in fireballs if fireball[0] + fireball_image.get_width() > 0]
+
+        # Move fireballs to the left
+        for fireball in fireballs:
+            fireball[0] -= fireball_speed
+        
+        # below lines are block FUCK BLOCKS FUCK FUCK FUCK
+        
+        current_time = pygame.time.get_ticks()
+        if current_time > block_spawn_time + block_spawn_interval:
+            new_block_pos_x = WIDTH
+            new_block_pos_y = random.randint(150, 350)
+
+            blocks.append([new_block_pos_x, new_block_pos_y])
+            block_spawn_time = current_time
+            block_spawn_interval = random.randint(2000, 4000)
+
+
+        catbunny_rect1 = pygame.Rect(catbunny_pos_x+30, catbunny_pos_y, new_width, new_height)
+
+        # Check if catbunny lands on a block or falls off a block
+        # Move all blocks to the left
+        for block in blocks:
+            block[0] -= block_speed  # move the block leftwards
+
+
+        # If not on a block and below ground, place catbunny on the ground
+        if not on_block and catbunny_pos_y >= ground:
             catbunny_pos_y = ground
-            jump = False
             velocity = 0
 
-    fireball_rect = pygame.Rect(carrot_pos[0], carrot_pos[1], 20, 30)
+            
+        # above lines are block FUCK BLOCKS FUCK FUCK FUCK
 
-    # Check for collision between catbunny and fireballs:
-    catbunny_rect = pygame.Rect(catbunny_pos_x-100, catbunny_pos_y, new_width, new_height)
-    
-    for fireball in fireballs:
-        fireball_rect = pygame.Rect(fireball[0], fireball[1], 30, 30)
-        if catbunny_rect.colliderect(fireball_rect):
-            score -= 1  # Decrement the score
-            if score < 0:
-                score = 0  # Ensure score doesn't go below 0
-            fireballs.remove(fireball)  # Remove the fireball
+        if current_time - last_frame_time > frame_duration:
+            current_frame = (current_frame + 1) % len(frames)
+            last_frame_time = current_time
 
+        carrot_pos = (carrot_pos[0] - carrot_speed, carrot_pos[1])
+        if carrot_pos[0] < -carrot_image.get_width():
+            carrot_pos = list(generate_random_carrot_position())
+            carrot_pos[1] = random.randint(0, HEIGHT - 300 - carrot_image.get_height())
 
+        background_pos1[0] -= background_speed
+        background_pos2[0] -= background_speed
+        if background_pos1[0] < -3600:
+            background_pos1[0] = 3600
+        if background_pos2[0] < -3600:
+            background_pos2[0] = 3600
 
-    if random.random() < fireball_chance:
-        fireball_start_pos = [wizard_pos[0], wizard_pos[1] + wizard_image.get_height() // 2]
-        fireballs.append(fireball_start_pos)
+        scroll_speed = 5
+        platform_pos1_x -= scroll_speed
+        platform_pos2_x -= scroll_speed
 
-    fireballs = [fireball for fireball in fireballs if fireball[0] + fireball_image.get_width() > 0]
+        if platform_pos1_x <= -platform_image.get_width():
+            platform_pos1_x = platform_image.get_width()
+        if platform_pos2_x <= -platform_image.get_width():
+            platform_pos2_x = platform_image.get_width()
 
-    # Move fireballs to the left
-    for fireball in fireballs:
-        fireball[0] -= fireball_speed
-    
-    # below lines are block FUCK BLOCKS FUCK FUCK FUCK
-    
-    current_time = pygame.time.get_ticks()
-    if current_time > block_spawn_time + block_spawn_interval:
-        new_block_pos_x = WIDTH
-        new_block_pos_y = random.randint(150, 350)
-
-        blocks.append([new_block_pos_x, new_block_pos_y])
-        block_spawn_time = current_time
-        block_spawn_interval = random.randint(2000, 4000)
+        screen.blit(background_image, background_pos1)
+        screen.blit(background_image, background_pos2)
+        screen.blit(platform_image, (platform_pos1_x, HEIGHT - platform_image.get_height()-80))
+        screen.blit(platform_image, (platform_pos2_x, HEIGHT - platform_image.get_height()-80))
+        screen.blit(wizard_image, wizard_pos)
 
 
-    catbunny_rect1 = pygame.Rect(catbunny_pos_x+30, catbunny_pos_y, new_width, new_height)
-
-    # Check if catbunny lands on a block or falls off a block
-    # Move all blocks to the left
-    for block in blocks:
-        block[0] -= block_speed  # move the block leftwards
-
-
-    # If not on a block and below ground, place catbunny on the ground
-    if not on_block and catbunny_pos_y >= ground:
-        catbunny_pos_y = ground
-        velocity = 0
-
+        for block in blocks:
+            screen.blit(block_image, (block[0], block[1]))
         
-    # above lines are block FUCK BLOCKS FUCK FUCK FUCK
+        blocks = [block for block in blocks if block[0] + block_width > 0]
+        
+        for fireball in fireballs:
+            screen.blit(fireball_image, fireball)
 
-    if current_time - last_frame_time > frame_duration:
-        current_frame = (current_frame + 1) % len(frames)
-        last_frame_time = current_time
+        screen.blit(frames[current_frame], (catbunny_pos_x, catbunny_pos_y))
+        screen.blit(carrot_image, carrot_pos)
+        
+        screen.blit(carrot1_image, carrot1_pos)
+        
+        # Display the score
+        font = pygame.font.SysFont(None, 36)  # Use the default font with size 36
+        score_text = font.render(f"{score}", True, (255, 255, 255))  # Render the score text in white
+        screen.blit(score_text, (40, 10))  # Draw the score text at the top-left corner of the screen
 
-    carrot_pos = (carrot_pos[0] - carrot_speed, carrot_pos[1])
-    if carrot_pos[0] < -carrot_image.get_width():
-        carrot_pos = list(generate_random_carrot_position())
-        carrot_pos[1] = random.randint(0, HEIGHT - 300 - carrot_image.get_height())
+        screen.blit(pause_button_image, button_rect.topleft)
 
-    background_pos1[0] -= background_speed
-    background_pos2[0] -= background_speed
-    if background_pos1[0] < -3600:
-        background_pos1[0] = 3600
-    if background_pos2[0] < -3600:
-        background_pos2[0] = 3600
+        pygame.display.flip()
 
-    scroll_speed = 5
-    platform_pos1_x -= scroll_speed
-    platform_pos2_x -= scroll_speed
-
-    if platform_pos1_x <= -platform_image.get_width():
-        platform_pos1_x = platform_image.get_width()
-    if platform_pos2_x <= -platform_image.get_width():
-        platform_pos2_x = platform_image.get_width()
-
-    screen.blit(background_image, background_pos1)
-    screen.blit(background_image, background_pos2)
-    screen.blit(platform_image, (platform_pos1_x, HEIGHT - platform_image.get_height()-80))
-    screen.blit(platform_image, (platform_pos2_x, HEIGHT - platform_image.get_height()-80))
-    screen.blit(wizard_image, wizard_pos)
-
-    for block in blocks:
-        screen.blit(block_image, (block[0], block[1]))
-    
-    blocks = [block for block in blocks if block[0] + block_width > 0]
-    
-    for fireball in fireballs:
-        screen.blit(fireball_image, fireball)
-
-    screen.blit(frames[current_frame], (catbunny_pos_x, catbunny_pos_y))
-    screen.blit(carrot_image, carrot_pos)
-    
-    screen.blit(carrot1_image, carrot1_pos)
-    
-    
-
-    # Display the score
-    font = pygame.font.SysFont(None, 36)  # Use the default font with size 36
-    score_text = font.render(f"{score}", True, (255, 255, 255))  # Render the score text in white
-    screen.blit(score_text, (40, 10))  # Draw the score text at the top-left corner of the screen
+    else:
+        screen.blit(background_image, background_pos1)
+        screen.blit(background_image, background_pos2)
+        screen.blit(platform_image, (platform_pos1_x, HEIGHT - platform_image.get_height()-80))
+        screen.blit(platform_image, (platform_pos2_x, HEIGHT - platform_image.get_height()-80))
+        screen.blit(wizard_image, wizard_pos)
 
 
-    pygame.display.flip()
+        for block in blocks:
+            screen.blit(block_image, (block[0], block[1]))
+        
+        blocks = [block for block in blocks if block[0] + block_width > 0]
+        
+        for fireball in fireballs:
+            screen.blit(fireball_image, fireball)
+
+        screen.blit(frames[current_frame], (catbunny_pos_x, catbunny_pos_y))
+        screen.blit(carrot_image, carrot_pos)
+        
+        screen.blit(carrot1_image, carrot1_pos)
+        
+        # Display the score
+        font = pygame.font.SysFont(None, 36)  # Use the default font with size 36
+        score_text = font.render(f"{score}", True, (255, 255, 255))  # Render the score text in white
+        screen.blit(score_text, (40, 10))  # Draw the score text at the top-left corner of the screen
+
+        screen.blit(go_button_image, button_rect.topleft)
+        pygame.display.flip()

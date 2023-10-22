@@ -10,10 +10,10 @@ root.title("Button Options")
 
 def button_click(button_name):
     if button_name == "Shop":
-        subprocess.Popen(["python", "shop_interface.py"])
+        subprocess.Popen(["python3", "shop_interface.py"])
         root.destroy()
     if button_name == "Home":
-        subprocess.Popen(["python", "englishmain.py"])
+        subprocess.Popen(["python3", "englishmain.py"])
         root.destroy()
 
 
