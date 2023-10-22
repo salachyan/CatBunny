@@ -96,7 +96,7 @@ def open_main_page():
     closet_button = tk.Button(root, text="Closet", command=lambda: button_click("Closet"), width=10, height=2, relief="ridge", borderwidth=4, bg=pastel_red, fg="white", font=custom_font)
     closet_button.grid(row=4, column=0, columnspan=2, padx=10, pady=(10))
 
-    close_button = tk.Button(root, text="Close", command=lambda: button_click("Close"), width=10, height=2, relief="ridge", borderwidth=4, bg='#D6A2E8', fg="white", font=custom_font)
+    close_button = tk.Button(root, text="Exit", command=lambda: button_click("Close"), width=10, height=2, relief="ridge", borderwidth=4, bg='#D6A2E8', fg="white", font=custom_font)
     close_button.grid(row=5, column=0, columnspan=2, padx=10, pady=(10, 50))
 
     # Center the grid in the window
@@ -325,7 +325,7 @@ def open_initial():
     closet_button = tk.Button(root, text="Closet", command=lambda: button_click("Closet"), width=10, height=2, relief="ridge", borderwidth=4, bg=pastel_red, fg="white", font=custom_font)
     closet_button.grid(row=4, column=0, columnspan=2, padx=10, pady=(10))
 
-    close_button = tk.Button(root, text="Close", command=lambda: button_click("Close"), width=10, height=2, relief="ridge", borderwidth=4, bg='#D6A2E8', fg="white", font=custom_font)
+    close_button = tk.Button(root, text="Exit", command=lambda: button_click("Close"), width=10, height=2, relief="ridge", borderwidth=4, bg='#D6A2E8', fg="white", font=custom_font)
     close_button.grid(row=5, column=0, columnspan=2, padx=10, pady=(10, 50))
 
     # Center the grid in the window
