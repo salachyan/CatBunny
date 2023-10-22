@@ -232,11 +232,11 @@ def open_intstruction_window():
 
 
     start_button = tk.Button(root, text="Play", command=lambda: button_click("StartGame"), width=10, height=2, relief="ridge", borderwidth=4, bg=pastel_green, fg="white", font=custom_font)
-    start_button.place(x=200,y=400)
+    start_button.place(x=200,y=450)
 
 
     goback_button = tk.Button(root, text="Exit", command=lambda: button_click("GoBack"), width=10, height=2, relief="ridge", borderwidth=4, bg=pastel_blue, fg="white", font=custom_font)
-    goback_button.place(x=700,y=400)
+    goback_button.place(x=700,y=450)
     for i in range(2):
         root.grid_columnconfigure(i, weight=1)
     bottom_right_button = tk.Button(root, text="Exit to Main", command=lambda: button_click("Bottom Right"), width=10, height=2, relief="ridge", borderwidth=4, bg="#FFB9A3", fg="white")
