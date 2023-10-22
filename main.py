@@ -2,7 +2,7 @@ import os
 import random
 import pygame
 from pygame.locals import QUIT, KEYDOWN, K_SPACE
-
+import subprocess
 # Initialize pygame
 pygame.init()
 
@@ -131,25 +131,9 @@ while True:
         carrot_pos = generate_random_carrot_position()
         
     # Check if score is 10 right after updating it
-    if score == 10:
-        print("WORK ON LINE 119")
-        # Work Here
-        # Work Here
-        # Work Here
-        # Work Here
-        # Work Here
-        # Work Here
-        # Work Here
-        # Work Here
-        # Work Here
-        # Work Here
-        # Work Here
-        # Work Here
-        # Work Here
-        # Work Here
-        # Work Here
-        # Work Here
-        # Work Here
+    if score == 5:
+        subprocess.Popen(["python", "winpage.py"])
+        exit(1)
 
     # Always apply gravity
     catbunny_pos_y += velocity

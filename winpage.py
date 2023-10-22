@@ -36,7 +36,7 @@ pastel_red = "#F69585"
 
 
 
-play_button = tk.Button(root, text="Continue?", command=lambda: button_click("Continue"), width=10, height=2, relief="ridge", borderwidth=4, bg=pastel_green, fg="white", font=custom_font)
+play_button = tk.Button(root, text="Next Level?", command=lambda: button_click("Continue"), width=10, height=2, relief="ridge", borderwidth=4, bg=pastel_green, fg="white", font=custom_font)
 play_button.grid(row=1, column=0, columnspan=2, padx=10, pady=(200,10)) 
 
 settings_button = tk.Button(root, text="Shop", command=lambda: button_click("Shop"), width=10, height=2, relief="ridge", borderwidth=4, bg=pastel_blue, fg="white", font=custom_font)
