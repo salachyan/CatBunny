@@ -150,8 +150,8 @@ while True:
             carrot_pos = generate_random_carrot_position()
             
         # Check if score is 10 right after updating it
-        if score == 5:
-            subprocess.Popen(["python3", "winpage.py"])
+        if score == 1:
+            subprocess.Popen(["python", "winpage.py"])
             exit(1)
             
 
